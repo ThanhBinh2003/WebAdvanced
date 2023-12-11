@@ -63,7 +63,7 @@ module.exports = {
 
             
             // Create token for login
-            const result = await newUser.save();
+            const result = await newUser.save().then(() => console.log("OK")).catch(err => {console.error(err);});
             newUser.time = dateTime;
             const token = jwt.sign({ newUser }, process.env.SESSION_KEY, { expiresIn: '1m' });
             

@@ -25,13 +25,11 @@ module.exports = {
             }
 
             const userDB = await User.findOne({ username });
-
             if (!userDB) {
                 return res.json(package(10, "Invalid username or password", null));
                 
             }
-            console.log("hello ")
-            console.log(user.password, "   ", userDB.password)
+
             if (user.password === userDB.password) {
                 // Store user information in the session
                 const userWithoutPassword = { ...userDB };
@@ -173,7 +171,7 @@ module.exports = {
 
             const user_jwt = jwt.verify(token, process.env.SESSION_KEY);
             if(user_jwt){
-                const user = await User.findOne({ username: user_jwt.preUser.username }).lean();
+                const user = await User.findOne({ username: user_jwt.newUser.username }).lean();
                 if (!user) {
                     return res.json(package(10, "Invalid username", null));
                 }
@@ -298,9 +296,9 @@ function persitUser(req, res, user){
     User.findOne({ username: user.username }).then((userFound) => {
         if (userFound) {
 
-              res.json(package(4, "username already exists", null));
-          
-              return;
+            res.json(package(4, "username already exists", null));
+        
+            return;
         }
         
         // User does not exist, create a new user
@@ -308,18 +306,18 @@ function persitUser(req, res, user){
         
         newUser.save().then(() => {
           // Establish the session after user creation
-          const userWithoutPassword = { ...user };
-          delete userWithoutPassword.password;
+            const userWithoutPassword = { ...user };
+            delete userWithoutPassword.password;
 
-          res.json(package(0, "Register successfully", userWithoutPassword));
+            res.json(package(0, "Register successfully", userWithoutPassword));
         }).catch((err) => {
-
-          res.json(package(5, "Register failed", err));
-
-        });
-      }).catch((err) => {
 
         res.json(package(5, "Register failed", err));
 
-      });
+    });
+    }).catch((err) => {
+
+    res.json(package(5, "Register failed", err));
+
+    });
 }
